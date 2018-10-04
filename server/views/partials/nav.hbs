@@ -1,0 +1,31 @@
+<nav class="uk-navbar-container" uk-navbar>
+    <div class="uk-navbar-left">
+
+        <ul class="uk-navbar-nav">
+            <a class="uk-navbar-item uk-logo" href="#">Pheme Auth API</a>
+            <li {{#eq @index.view "tokens"}}class="uk-active"{{/eq}}><a href="/tokens">Tokens</a></li>
+            <li><a href="#">
+                Docs
+                <span class="uk-icon uk-margin-small-left" uk-icon="icon: link"></span>
+            </a></li>
+            <li><a href="#">
+                Examples
+                <span class="uk-icon uk-margin-small-left" uk-icon="icon: link"></span>
+                </a></li>
+        </ul>
+
+    </div>
+    <div class="uk-navbar-right">
+
+        <ul class="uk-navbar-nav">
+            <li>
+                <a href="#"><span class="uk-icon" uk-icon="icon: user"></span> {{user.fullname}}</a>
+                <div class="uk-navbar-dropdown">
+                    <ul class="uk-nav uk-navbar-dropdown-nav">
+                        <li><a href="/logout"><span class="uk-icon" uk-icon="icon: sign-out"></span> Logout</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>

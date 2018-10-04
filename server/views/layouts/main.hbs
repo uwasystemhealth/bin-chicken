@@ -1,0 +1,16 @@
+<head>
+    <title>Pheme Auth API</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.19/css/uikit.min.css" integrity="sha256-mkEeR+LBgEcvoFElo9Y2eeldGu/cCBK0GDljs1CD1nk=" crossorigin="anonymous" />
+</head>
+<body style="min-height: 100vh;">
+    {{#if user}}{{>nav}}{{/if}}
+    <div class="uk-container uk-flex uk-flex-center uk-flex-middle">
+        {{{body}}}
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.19/js/uikit.min.js" integrity="sha256-tMn4QGID+/jiNvic9h36XOSErG9gcR9REq/Iin0G6Rk=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.19/js/uikit-icons.min.js" integrity="sha256-qbp9g8Xaozn/Hr4WGtbry3ZVu+wov7qwwL1x0Xj5CPE=" crossorigin="anonymous"></script>
+    {{#unlessEq @exphbs.view "login"}}
+        <script src="common/js/main.js"></script>
+    {{/unlessEq}}
+</body>

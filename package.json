@@ -1,0 +1,31 @@
+{
+  "name": "bin-chicken",
+  "version": "1.0.0",
+  "description": "GUI proxy and server management",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uwasystemhealth/bin-chicken.git"
+  },
+  "author": "Fraser Bullock",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uwasystemhealth/bin-chicken/issues"
+  },
+  "homepage": "https://github.com/uwasystemhealth/bin-chicken#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "connect-mongo": "^2.0.1",
+    "express": "^4.16.3",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.15.6",
+    "handlebars-helpers": "^0.10.0",
+    "helmet": "^3.13.0",
+    "mongoose": "^5.3.1",
+    "redbird": "^0.8.0",
+    "require-directory": "^2.1.1"
+  }
+}
