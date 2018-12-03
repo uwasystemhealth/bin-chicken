@@ -1,17 +1,22 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 const app = require('../app');
-const usernameType = require('./types/username.type');
-const emailType = require('./types/email.type');
-const nameType = require('./types/name.type');
-const enabledType = require('./types/enabled.type');
+const usernameType = require('../types/username.type');
+const emailType = require('../types/email.type');
+const nameType = require('../types/name.type');
+const enabledType = require('../types/enabled.type');
 
 const UserSchema = new Schema({
     username: Object.assign({index: true, unique: true}, usernameType),
     email: emailType,
-    fullname: nameType,
-    lastname: nameType,
-    firstname: nameType,
+    fullname: { ...nameType, required: false },
+    lastname: { ...nameType, required: false },
+    firstname: { ...nameType, required: false },
+    isAdmin: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
     enabled: enabledType,
 }, {timestamps: true});
 

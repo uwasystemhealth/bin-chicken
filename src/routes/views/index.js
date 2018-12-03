@@ -15,6 +15,6 @@ for(let i in views){
         routes.use(`/${i}`, ratelimit.prevent, views[i]);
     } else routes.use(`/${i}`, views[i]);
 }
-routes.use('/', views.tokens);
+routes.use('/', views.configs);
 
 module.exports = routes;

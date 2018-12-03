@@ -1,0 +1,14 @@
+{{#>serverName}}
+server_name
+    {{domain}}
+    {{#if idiotProof}}www.{{domain}}{{/if}}
+    {{#each aliases}}{{this}} {{/each}};
+{{/serverName}}
+
+server {
+	listen 80;
+	listen [::]:80;
+
+	{{>serverName}}
+    return {{#if permanent}}301{{else}}302{{/if}} {{redirect}}{{#if preserve}}$request_uri{{/if}};
+}

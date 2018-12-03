@@ -1,0 +1,60 @@
+<div class="uk-card uk-card-body uk-width-1-1 uk-width-2-3@m uk-width-1-2@l">
+    {{#if errorMessage}}
+        <div class="uk-text-danger">{{errorMessage}}</div>
+    {{/if}}
+    {{#if successMessage}}
+        <div class="uk-text-success">{{successMessage}}</div>
+    {{/if}}
+    <div uk-grid>
+        <div class="uk-text-lead uk-width-2-3" style="padding-left: 0;">API Tokens</div>
+        <div class="uk-text-right uk-width-1-3"  style="padding-left: 0;">
+            <a href="javascript:;" class="uk-icon-link add-token" uk-icon="plus" uk-tooltip="title: Add Token" uk-toggle="target: #modal-add-token"></a>
+            <div id="modal-add-token" uk-modal>
+                <form class="uk-modal-dialog uk-modal-body uk-form-stacked" action="tokens" method="POST">
+                    <legend class="uk-legend">Add Token</legend>
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="form-stacked-text">Application Name</label>
+                        <div class="uk-form-controls">
+                            <input class="uk-input" id="form-stacked-text" name="name" type="text" required placeholder="Rocket to the moon">
+                        </div>
+                    </div>
+                    <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                    <button class="uk-button uk-button-primary" type="submit">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <table class="uk-table uk-table-responsive uk-table-divider">
+        <thead>
+            <tr>
+                <th>Application Name</th>
+                <th>Token</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each tokens}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td> 
+                        ************
+                    </td>
+                    <td>
+                        <a href="javascript:;" data-copy="{{token}}" data-index="{{@index}}" class="uk-icon-link copy-link" uk-icon="copy" uk-tooltip="title: Copy"></a>
+                        <span id="copied-{{@index}}" uk-icon="copy" uk-tooltip="title: Copied!" style="display: none;"></span>
+                        <a href="javascript:;" class="uk-icon-link uk-text-danger" uk-icon="trash" uk-tooltip="title: Delete Token" uk-toggle="target: #modal-delete-token-{{@index}}"></a>
+                        <div id="modal-delete-token-{{@index}}" uk-modal>
+                            <form class="uk-modal-dialog uk-modal-body uk-form-stacked" action="tokens" method="POST">
+                                <legend class="uk-legend">Remove Token for {{name}}?! ARE YOU SURE!?</legend>
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="token" value="{{token}}">
+                                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                                <button class="uk-button uk-button-danger" type="submit">Delete Forever</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
