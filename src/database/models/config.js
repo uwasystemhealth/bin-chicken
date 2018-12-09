@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
-const app = require('../app');
+const app = require('../../../app');
 const getCerts = require('../../lib/getCurrentLE');
 const enabledType = require('../types/enabled.type');
 const domainType = require('../types/domain.type');

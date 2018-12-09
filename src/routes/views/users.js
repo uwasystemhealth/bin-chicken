@@ -1,4 +1,4 @@
-const app = require('../../app');
+const app = require('../../../app');
 
 module.exports = async (req, res) => {
     if(!req.session.loggedIn) return res.redirect('/');

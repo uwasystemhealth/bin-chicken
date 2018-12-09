@@ -1,4 +1,4 @@
-const app = require('../../app');
+const app = require('../../../app');
 
 // logout, pretty basic, delete the user's session
 // post for ajax calls to logout, returns json with an error if there is one

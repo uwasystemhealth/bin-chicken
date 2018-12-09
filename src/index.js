@@ -12,7 +12,7 @@ const MongoStore = require('connect-mongo')(session);
 
 // setup for express
 server.use(helmet());
-server.set("trust proxy", app.config.trust_proxy); // trust first proxy
+server.set("trust proxy", ["loopback", "130.95.172.18"]); // trust first proxy
 server.set('json spaces', 4);
 app.express_session = session({
     resave: false,
@@ -32,6 +32,8 @@ server.use(bodyParser());
 
 server.set('views', path.join(__dirname, 'views'));
 app.exphbs = exphbs({
+    layoutsDir: 'src/views/layouts/',
+    partialsDir: 'src/views/partials/',
     defaultLayout: 'main', 
     extname: '.hbs',
     helpers: Object.assign({}, handlebarsHelpers),
@@ -44,7 +46,10 @@ server.use("/common", express.static( __dirname + '/common' ));
 server.use('/api/', require('./routes/api/'));
 server.use('/', require('./routes/views/'));
 
-app.httpServer = server.listen(app.config.http.port, function (err) {
+const port = process.env.PORT || 9002;
+const host = process.env.HOST || 'localhost';
+
+app.httpServer = server.listen(port, host, function (err) {
 	if(err) console.error(err);
-    console.log('pheme-auth server listening on: '.concat(app.config.http.port));
+    console.log(`pheme-auth server listening on: http://${host}:${port}`);
 });

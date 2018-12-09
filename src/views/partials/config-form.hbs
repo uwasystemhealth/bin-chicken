@@ -1,0 +1,106 @@
+<script id="config-list-item" type="text/x-handlebars-template">
+    <form class="uk-modal-dialog uk-modal-body uk-form-stacked">
+        <legend class="uk-legend">Edit Config for /{{config.domain}}.</legend>
+        <input type="hidden" name="action" value="patch">
+        <input type="hidden" name="_id" :value="config._id">
+        <div class="uk-margin">
+            <label class="uk-form-label" :for="`${config._id}-domain`">Domain Name</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" :id="`${config._id}-domain`" name="domain" type="text" :readonly="!initial" placeholder="sub.example.com" v-model="config.domain">
+            </div>
+        </div>
+        <div class="uk-margin">
+            <label class="uk-form-label" :for="`${config._id}-type`">Config Type</label>
+            <div class="uk-form-controls">
+                <select class="uk-select" :id="`${config._id}-type`" name="type" required :readonly="readonly" v-model="config.type">
+                    <option>proxy</option>
+                    <option>redirect</option>
+                </select>
+            </div>
+        </div>
+        <div class="uk-margin">
+            <div class="uk-form-controls">
+                <label><input class="uk-checkbox" type="checkbox" name="idiotProof" v-model="idiotProof" :readonly="readonly"> Is idiot proof? (redirect 'www.')</label>
+            </div>
+        </div>
+        <div class="uk-margin">
+            <label class="uk-form-label" :for="`${config._id}-aliases`">Domain Aliases</label>
+            <small>Comma sepatated list, these will redirect to the main domain.</small>
+            <div class="uk-form-controls">
+                <textarea
+                    class="uk-textarea"
+                    :id="`${config._id}-aliases`"
+                    name="aliases"
+                    placeholder="alias.example.com, alias2.example.com"
+                    :value="config.aliases.join(',\n')"
+                    @input="config.aliases = $event.target.value.replace(/\s/g, '').split(',')"
+                    :readonly="readonly"
+                ></textarea>
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-form-controls">
+                <label><input class="uk-checkbox" type="checkbox" name="leEnabled" v-model="leEnabled" :readonly="readonly"> Use let's encrypt?</label>
+            </div>
+        </div>
+        <div class="uk-margin" v-if="leEnabled">
+            <div class="uk-form-controls">
+                <label><input class="uk-checkbox" type="checkbox" name="leUpgrade" v-model="config.leUpgrade" :readonly="readonly"> Redirect HTTP to HTTPS?</label>
+            </div>
+        </div>
+        <div class="uk-margin" v-if="leEnabled">
+            <label class="uk-form-label" :for="`${config._id}-leDomain`">Let's Encrypt Cert</label>
+            <div class="uk-form-controls">
+                <select class="uk-select" :id="`${config._id}-leDomain`" name="leDomain" v-model="config.leDomain" :readonly="readonly">
+                    <option
+                        v-for="led in leDomainFiltered"
+                        :key="led.name"
+                        value="led.name"
+                    >/{{led.name}}</option>
+                    <option v-else disabled value="">No match found for the specified domain.</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="uk-margin" v-if="config.type === 'proxy'">
+            <label class="uk-form-label" :for="`${config._id}-host`">Proxy Host</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" :id="`${config._id}-host`" name="host" type="text" placeholder="localhost" v-model="config.host" :readonly="readonly">
+            </div>
+        </div>
+        <div class="uk-margin" v-if="config.type === 'proxy'">
+            <label class="uk-form-label" :for="`${config._id}-port`">Proxy Port</label>
+            <div class="uk-form-controls">
+                <a class="uk-form-icon uk-form-icon-flip" v-if="initial" @click.prevent="gen-port" href="#" uk-icon="icon: refresh" uk-tooltip="title: Generate Port"></a>
+                <input class="uk-input" :id="`${config._id}-port`" name="port" type="number" placeholder="1234" min="1024" max="65535" v-model="config.port" :readonly="readonly">
+            </div>
+        </div>
+
+        <div class="uk-margin" v-if="config.type === 'redirect'">
+            <label class="uk-form-label" :for="`${config._id}-redirect`">Redirect URL</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" :id="`${config._id}-redirect`" name="redirect" type="url" placeholder="https://www.redirect.com/interesting/page" v-model="config.redirect" :readonly="readonly">
+            </div>
+        </div>
+        <div class="uk-margin" v-if="config.type === 'redirect'">
+            <div class="uk-form-controls">
+                <label><input class="uk-checkbox" type="checkbox" name="permanent" v-model="permanent" :readonly="readonly"> Permanent 301 redirect? (302 otherwise)</label>
+            </div>
+        </div>
+        <div class="uk-margin" v-if="config.type === 'redirect'">
+            <div class="uk-form-controls">
+                <label><input class="uk-checkbox" type="checkbox" name="preserve" v-model="preserve" :readonly="readonly"> Preserve request? (keep stuff at the end like "/interesting/page?query=1#heading")</label>
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <label class="uk-form-label" :for="`${config._id}-owner`">Owner</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" :id="`${config._id}-owner`" name="owner" type="text" readonly :value="users ? users.find(u=>u._id === config.owner).fullname : 'Unknown'">
+            </div>
+        </div>
+        <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+        <button class="uk-button uk-button-success" type="submit" v-if="!readonly">Save</button>
+    </form>
+</script>

@@ -1,6 +1,6 @@
 
 const routes = require('express').Router();
-const app = require('../../app');
+const app = require('../../../app');
 const ratelimit = require('../middleware/ratelimit');
 const requireDirectory = require('require-directory');
 

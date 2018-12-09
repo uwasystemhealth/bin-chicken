@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
-const app = require('../app');
+const app = require('../../../app');
 const usernameType = require('../types/username.type');
 const emailType = require('../types/email.type');
 const nameType = require('../types/name.type');
@@ -8,7 +8,7 @@ const enabledType = require('../types/enabled.type');
 
 const UserSchema = new Schema({
     username: Object.assign({index: true, unique: true}, usernameType),
-    email: emailType,
+    email: { ...emailType, required: false },
     fullname: { ...nameType, required: false },
     lastname: { ...nameType, required: false },
     firstname: { ...nameType, required: false },
@@ -34,4 +34,8 @@ UserSchema.methods.toData = function(){
 
 UserSchema.query.whereValid = function(){ return this.where({enabled: true}); };
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = User = mongoose.model('User', UserSchema);
+
+(async () => {
+    if (!(await User.countDocuments())) await (new User({username: '21299527', isAdmin: true})).save();
+})();

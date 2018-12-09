@@ -2,8 +2,12 @@
     <div class="uk-navbar-left">
 
         <ul class="uk-navbar-nav">
-            <a class="uk-navbar-item uk-logo" href="#">Pheme Auth API</a>
-            <li {{#eq @index.view "tokens"}}class="uk-active"{{/eq}}><a href="/tokens">Tokens</a></li>
+            <a class="uk-navbar-item uk-logo" href="#">Bin Chicken</a>
+            <li {{#eq @index.view "configs"}}class="uk-active"{{/eq}}><a href="/configs">Configs</a></li>
+            {{#if user.isAdmin}}
+            <li {{#eq @index.view "users"}}class="uk-active"{{/eq}}><a href="/users">Users</a></li>
+            {{/if}}
+            <!--
             <li><a href="#">
                 Docs
                 <span class="uk-icon uk-margin-small-left" uk-icon="icon: link"></span>
@@ -12,6 +16,7 @@
                 Examples
                 <span class="uk-icon uk-margin-small-left" uk-icon="icon: link"></span>
                 </a></li>
+                -->
         </ul>
 
     </div>

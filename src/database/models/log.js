@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
-const app = require('../app');
+const app = require('../../../app');
 
 const LogSchema = new Schema({
     token: {

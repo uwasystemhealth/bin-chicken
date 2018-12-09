@@ -1,24 +1,25 @@
+const request = require('request-promise-native');
+const app = require('../../../app');
 
-const app = require('../../app');
-
-const loginRequest = async (user, pass, token) => {
+const loginRequest = async (username, pass, token) => {
     if(!token) token = process.env.PHEME_API_TOKEN;
     
     const options = {
         method: 'POST',
         uri: 'https://auth.uwamakers.com/api/login',
         body: {
-            user: user,
+            user: username,
             pass: pass,
             token: token
         },
         json: true,
     };
 
-    const { user } = request(options);
+    const { user } = await request(options);
 
-    const userModel = app.models.user.findOne({ username: user.username, enabled: true });
+    const userModel = await app.models.user.findOne({ username: user.username, enabled: true });
     if(!userModel) throw new app.errors.UserDisabled();
+    userModel.fullname = user.fullname;
     userModel.firstname = user.firstname;
     userModel.lastname = user.lastname;
     userModel.email = user.email;

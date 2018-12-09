@@ -1,6 +1,6 @@
 const routes = require('express').Router();
 const ratelimit = require('../middleware/ratelimit');
-const checkLogin = require('../middleware/checkLogin');
+const checkLogin = require('../middleware/logincheck');
 const wrapAsync = require('../../lib/wrapAsync');
 const configs = require('./configs');
 const users = require('./users');

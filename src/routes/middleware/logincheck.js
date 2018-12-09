@@ -1,9 +1,9 @@
 
-const app = require('../../app');
+const app = require('../../../app');
 
 module.exports = async (req, res, next) => {
     if(req.session.loggedIn){
-        return app.models.User.findOne({username: req.session.username}).then((user) => {
+        return app.models.user.findOne({username: req.session.username}).then((user) => {
             res.locals.user = user;
             next();
         }).catch(console.error);

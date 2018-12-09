@@ -1,4 +1,4 @@
-const app = require('../../app');
+const app = require('../../../app');
 
 module.exports = (err, req, res, next) => {
     try{

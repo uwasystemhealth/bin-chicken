@@ -6,55 +6,50 @@
         <div class="uk-text-success">{{successMessage}}</div>
     {{/if}}
     <div uk-grid>
-        <div class="uk-text-lead uk-width-2-3" style="padding-left: 0;">API Tokens</div>
+        <div class="uk-text-lead uk-width-2-3" style="padding-left: 0;">Configs</div>
         <div class="uk-text-right uk-width-1-3"  style="padding-left: 0;">
-            <a href="javascript:;" class="uk-icon-link add-token" uk-icon="plus" uk-tooltip="title: Add Token" uk-toggle="target: #modal-add-token"></a>
-            <div id="modal-add-token" uk-modal>
-                <form class="uk-modal-dialog uk-modal-body uk-form-stacked" action="tokens" method="POST">
-                    <legend class="uk-legend">Add Token</legend>
-                    <div class="uk-margin">
-                        <label class="uk-form-label" for="form-stacked-text">Application Name</label>
-                        <div class="uk-form-controls">
-                            <input class="uk-input" id="form-stacked-text" name="name" type="text" required placeholder="Rocket to the moon">
-                        </div>
-                    </div>
-                    <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
-                    <button class="uk-button uk-button-primary" type="submit">Add</button>
-                </form>
+            <a href="javascript:;" class="uk-icon-link add-config" uk-icon="plus" uk-tooltip="title: Add Config" uk-toggle="target: #modal-add-config"></a>
+            <div id="modal-add-config" uk-modal>
+                <config-form v-model="config" initial="true"/>
             </div>
         </div>
     </div>
     <table class="uk-table uk-table-responsive uk-table-divider">
         <thead>
             <tr>
-                <th>Application Name</th>
-                <th>Token</th>
+                <th>Domain Name</th>
+                <th>Type</th>
+                <th>Target</th>
+                <th>Encrypted?</th>
+                <th>Owner</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
-            {{#each tokens}}
-                <tr>
-                    <td>{{name}}</td>
-                    <td> 
-                        ************
-                    </td>
-                    <td>
-                        <a href="javascript:;" data-copy="{{token}}" data-index="{{@index}}" class="uk-icon-link copy-link" uk-icon="copy" uk-tooltip="title: Copy"></a>
-                        <span id="copied-{{@index}}" uk-icon="copy" uk-tooltip="title: Copied!" style="display: none;"></span>
-                        <a href="javascript:;" class="uk-icon-link uk-text-danger" uk-icon="trash" uk-tooltip="title: Delete Token" uk-toggle="target: #modal-delete-token-{{@index}}"></a>
-                        <div id="modal-delete-token-{{@index}}" uk-modal>
-                            <form class="uk-modal-dialog uk-modal-body uk-form-stacked" action="tokens" method="POST">
-                                <legend class="uk-legend">Remove Token for {{name}}?! ARE YOU SURE!?</legend>
-                                <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="token" value="{{token}}">
-                                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
-                                <button class="uk-button uk-button-danger" type="submit">Delete Forever</button>
-                            </form>
+        <tbody id="config-list">
+            <tr v-for="config in configs">
+                <td>/{{config.domain}}</td>
+                <td>/{{config.type}}</td>
+                <td>/{{config.type === 'redirect' ? config.redirect : `${config.host}:${config.port}`}}</td>
+                <td>
+                    <span v-if="leDomain" uk-icon="check"></span>
+                    <span v-else uk-icon="close"></span>
+                </td>
+                <td>/{{users ? users.find(u=>u._id === config.owner).fullname : 'Unknown'}}</td>
+                <td>
+                    <a href="javascript:;" class="uk-icon-link edit-config" uk-icon="edit" uk-tooltip="title: Edit Config" :uk-toggle="`target: #modal-edit-config-${config._id}`"></a>
+                    <a href="javascript:;" class="uk-icon-link uk-text-danger" uk-icon="trash" uk-tooltip="title: Delete Config" :uk-toggle="`target: #modal-delete-config-${config._id}`"></a>
+                    <div :id="`modal-delete-config-${_id}`" uk-modal>
+                        <div class="uk-modal-dialog uk-modal-body">
+                            <legend class="uk-legend">Remove Config for /{{config.domain}}?! ARE YOU SURE!?</legend>
+                            <button class="uk-button uk-button-default uk-modal-close">Cancel</button>
+                            <button class="uk-button uk-button-danger" @click.stop="delete">Delete Forever</button>
                         </div>
-                    </td>
-                </tr>
-            {{/each}}
+                    </div>
+                    <div :id="`modal-edit-config-${_id}`" uk-modal>
+                        <config-form :config="config"/>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>
