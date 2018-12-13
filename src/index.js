@@ -9,6 +9,9 @@ const server = app.server = express();
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const MongoStore = require('connect-mongo')(session);
+const Webpack = require('webpack');
+const webpackConfig = require('../webpack.config');
+const compiler = Webpack(webpackConfig);
 
 // setup for express
 server.use(helmet());
@@ -41,10 +44,32 @@ app.exphbs = exphbs({
 server.engine('.hbs', app.exphbs);
 server.set('view engine', '.hbs');
 
-server.use("/common", express.static( __dirname + '/common' ));
+const root = path.normalize(`${__dirname}/..`);
+server.use(express.static(`${root}/dist`));
+server.use(express.static(`${root}/src/common`));
 
 server.use('/api/', require('./routes/api/'));
-server.use('/', require('./routes/views/'));
+
+server.use(require('webpack-dev-middleware')(compiler, {
+    publicPath: webpackConfig.output.publicPath,
+    contentBase: `${root}/src/client`,
+    hot: true,
+    inline: true,
+    quiet: false,
+    noInfo: false,
+    lazy: false,
+    stats: {
+        chunks: false,
+        chunkModules: false,
+        colors: true
+    }
+}))
+
+server.use(require('webpack-hot-middleware')(compiler, {
+    path: '/__webpack_hmr'
+}))
+//server.use('/', require('./routes/views/'));
+server.get('*', (req, res) => res.sendFile(`${root}/src/common/index.html`));
 
 const port = process.env.PORT || 9002;
 const host = process.env.HOST || 'localhost';

@@ -1,8 +1,8 @@
 // initiate packages
-/*eslint-env node */
+/* eslint-env node */
 require('dotenv').config();
 
-const app = module.exports = {};
+const app = module.exports = {}; // eslint-disable-line no-multi-assign
 
 app.errors = require('./src/errors/');
 
