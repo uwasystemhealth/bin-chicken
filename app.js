@@ -8,3 +8,5 @@ app.errors = require('./src/errors/');
 
 require('./src/database/');
 require('./src');
+
+// require('./src/lib/initConfigFiles')();

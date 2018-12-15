@@ -1,0 +1,34 @@
+{{#if leDomain}}
+server {
+    server_name {{domain}};
+    {{#eq type 'proxy'}}{{>proxy}}{{else}}{{>redirect}}{{/eq}}
+
+    listen [::]:443 ssl;
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/{{leDomain}}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{leDomain}}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+}
+
+{{#if leUpgrade}}
+server {
+    listen 80;
+    listen [::]:80;
+
+    {{>serverName}}
+
+    return 301 https://{{domain}}$request_uri;
+}
+{{/if}}
+{{else}}
+server {
+    listen 80;
+    listen [::]:80;
+    {{>serverName}}
+
+    {{#eq type 'proxy'}}{{>proxy}}{{else}}{{>redirect}}{{/eq}}
+
+}
+{{/if}}

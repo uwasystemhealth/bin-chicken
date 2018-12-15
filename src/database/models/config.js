@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 // const app = require('../../../app');
 const getCerts = require('../../lib/getCurrentLE');
+const testConfig = require('../../lib/testConfig');
+const createConfig = require('../../lib/createConfig');
+const deleteConfig = require('../../lib/deleteConfig');
 const enabledType = require('../types/enabled.type');
 const domainType = require('../types/domain.type');
 
@@ -25,9 +28,7 @@ const ConfigSchema = new Schema({
     ...domainType,
     validate: async (v) => {
       const certs = await getCerts();
-      return certs[v] && !!certs[v].domains.find(
-        domain => RegExp(`$${domain.replace('*', '[\\w.-]+')}^`, 'i').test(v),
-      );
+      return !!certs[v];
     },
     toLower: true,
   },
@@ -61,6 +62,16 @@ const ConfigSchema = new Schema({
   }],
   enabled: enabledType,
 }, { timestamps: true });
+
+ConfigSchema.pre('save', async function () {
+  const output = await testConfig(this);
+  if(output.indexOf('test is successful') === -1) throw new Error('Invalid configuration');
+});
+
+ConfigSchema.post('save', async function () {
+  if(this.enabled) await createConfig(this);
+  else await deleteConfig(this);
+});
 
 ConfigSchema.methods.safeRemove = function () { this.enabled = false; return this.save(); };
 

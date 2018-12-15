@@ -1,0 +1,4 @@
+server_name
+    {{domain}}{{~#if idiotProof}}
+    www.{{domain}}{{/if}}{{~#if aliases.length~}}{{~#each aliases}}
+    {{this}}{{~/each~}}{{~/if~}};

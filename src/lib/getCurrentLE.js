@@ -22,6 +22,6 @@ module.exports = async () => {
       certs[current][i.toLocaleLowerCase().replace(/\s/g, '_')] = v.trim();
     }
   });
-  certs.domains = certs.domains.split(' ');
+  Object.keys(certs).forEach((i) => { certs[i].domains = certs[i].domains.split(' '); });
   return certs;
 };

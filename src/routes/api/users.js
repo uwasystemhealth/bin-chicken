@@ -14,10 +14,10 @@ module.exports = {
   async create(req, res) {
     if(!res.locals.user.isAdmin) throw new app.errors.NoPerm();
     const { body } = req;
-    if(!body.username || !/$\d{8}^/.test(body.username)) throw new app.errors.UsernameInvalid();
-    const count = await User.count({ username: body.username }).whereValid();
-    if(count) throw new app.errors.UserExists();
-    const user = new User({ username: body.username });
+    if(!body.username || !/^\d{8}$/.test(body.username)) throw new app.errors.UsernameInvalid();
+    let user = await User.findOne({ username: body.username });
+    if(!user) user = new User({ username: body.username });
+    else user.enabled = true;
     await user.save();
     res.json(user);
   },
@@ -27,6 +27,7 @@ module.exports = {
     const user = req.params.userId ? await User.findById(req.params.userId).whereValid() : null;
     if(!user) throw new app.errors.UserNotFound();
     if(typeof body.isAdmin === 'boolean') user.isAdmin = body.isAdmin;
+    if(typeof body.canCreate === 'boolean') user.canCreate = body.canCreate;
     await user.save();
     res.json(user);
   },

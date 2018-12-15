@@ -13,10 +13,10 @@ module.exports = async (req, res, next) => {
         && req.method === 'GET'
         && (req.path === '/api/config/' || req.path.indexOf('/api/config/render') === 0)
   ) return next();
-  if(req.path.indexOf('login') === -1) {
+  if(req.path.indexOf('login') === -1 && req.hostname !== 'localhost') {
     // save the path that the user was trying to access for after login
     if(req.path !== '/') req.session.preLoginPath = req.path;
-    res.redirect('/login');
+    next(new app.errors.UserNotFound());
   } else {
     next();
   }

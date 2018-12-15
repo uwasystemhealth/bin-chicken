@@ -1,7 +1,8 @@
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
+  parser: 'vue-eslint-parser',
   parserOptions: {
+    parser: 'babel-eslint',
     ecmaVersion: 7,
     sourceType: 'module',
     ecmaFeatures: {
@@ -12,18 +13,14 @@ module.exports = {
   env: {
     browser: true,
   },
-  extends: 'airbnb-base',
-  // required to lint *.vue files
-  plugins: [
-    'html'
-  ],
+  extends: ['airbnb-base', 'plugin:vue/recommended'],
   // check if imports actually resolve
-  'settings': {
+  settings: {
     'import/resolver': {
-      'webpack': {
-        'config': 'webpack.conf.js'
-      }
-    }
+      webpack: {
+        config: 'webpack.config.js',
+      },
+    },
   },
   // add your custom rules here
   'rules': {
@@ -40,5 +37,20 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     'no-else-return': 0,
     'keyword-spacing': 0,
+    'no-underscore-dangle': 0,
+    'import/newline-after-import': 0,
+    'no-multiple-empty-lines': 0,
+    'vue/max-attributes-per-line': 0,
+    'vue/attributes-order': 0,
+    'vue/component-name-in-template-casing': 0,
+    'vue/singleline-html-element-content-newline': 0,
+    'vue/mustache-interpolation-spacing': 0,
+    'vue/attribute-hyphenation': 0,
+    // 'vue/html-closing-bracket-spacing': 0,
+    'max-len': [2, {
+      code: 150,
+      ignoreComments: true,
+      ignoreTrailingComments: true,
+    }],
   }
 }

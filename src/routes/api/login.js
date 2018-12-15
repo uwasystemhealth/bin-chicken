@@ -1,47 +1,56 @@
 const request = require('request-promise-native');
 const app = require('../../../app');
 
-const loginRequest = async (username, pass, token) => {
-    if(!token) token = process.env.PHEME_API_TOKEN;
-    
-    const options = {
-        method: 'POST',
-        uri: 'https://auth.uwamakers.com/api/login',
-        body: {
-            user: username,
-            pass: pass,
-            token: token
-        },
-        json: true,
-    };
-    let user = null;
+const loginRequest = async (username, pass, tok) => {
+  const token = tok || process.env.PHEME_API_TOKEN;
 
-    try {
-      user = (await request(options)).user;
-    } catch(err){
-      //console.error(err);
-      throw new app.errors.InvalidLogin((err.error && err.error.message) || err.message);
-    }
+  const options = {
+    method: 'POST',
+    uri: 'https://auth.uwamakers.com/api/login',
+    body: {
+      user: username,
+      pass,
+      token,
+    },
+    json: true,
+  };
+  let user = null;
 
-    const userModel = await app.models.user.findOne({ username: user.username, enabled: true });
-    if(!userModel) throw new app.errors.UserDisabled();
-    userModel.fullname = user.fullname;
-    userModel.firstname = user.firstname;
-    userModel.lastname = user.lastname;
-    userModel.email = user.email;
-    await userModel.save();
+  try {
+    user = (await request(options)).user; // eslint-disable-line prefer-destructuring
+  } catch(err) {
+    // console.error(err);
+    throw new app.errors.InvalidLogin((err.error && err.error.message) || err.message);
+  }
 
-    return userModel;
+  const userModel = await app.models.user.findOne({ username: user.username, enabled: true });
+  if(!userModel) throw new app.errors.UserDisabled();
+  userModel.fullname = user.fullname;
+  userModel.firstname = user.firstname;
+  userModel.lastname = user.lastname;
+  userModel.email = user.email;
+  await userModel.save();
+
+  return userModel;
 };
 
-// logout, pretty basic, delete the user's session
-// post for ajax calls to logout, returns json with an error if there is one
 module.exports = async (req, res) => {
-    if(req.session.loggedIn) return res.json(await app.models.user.findOne({ username: req.session.username, enabled: true }));
-    let username = req.body.username;
-    let password = req.body.password;
-    const user = await loginRequest(username, password);
-    req.session.username = user.username;
-    req.session.loggedIn = true;
-    res.json(user);
+  if (req.session.loggedIn) {
+    return res.json(await app.models.user.findOne({
+      username: req.session.username,
+      enabled: true,
+    }));
+  }
+  const { username, password } = req.body;
+  if (!username || !password) throw new app.errors.InvalidLogin();
+  const user = await loginRequest(username, password);
+  req.session.username = user.username;
+  req.session.loggedIn = true;
+  return req.session.save((err) => {
+    if (err) {
+      console.error(err); // eslint-disable-line no-console
+      throw new app.errors.Internal();
+    }
+    return res.json(user);
+  });
 };

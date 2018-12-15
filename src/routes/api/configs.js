@@ -1,12 +1,12 @@
 const app = require('../../../app');
+const testConfig = require('../../lib/testConfig');
 
 const Config = app.models.config;
 
 module.exports = {
   async find(req, res) {
     const configs = await Config.find().whereValid();
-    configs.map(config => ({ ...config, perm: config.getPerm(res.locals.user) }));
-    res.json(configs);
+    res.json(configs.map(config => ({ ...config._doc, perm: config.getPerm(res.locals.user) })));
   },
   async get(req, res) {
     const config = req.params.confId ? await Config.findById(req.params.confId) : null;
@@ -19,6 +19,8 @@ module.exports = {
     const config = new Config(body);
     // eslint-disable-next-line no-underscore-dangle
     config.owner = res.locals.user._id;
+    if(!Array.isArray(config.collabs)) config.collabs = [config.owner];
+    if(config.collabs.indexOf(config.owner) === -1) config.collabs.push(config.owner);
     await config.save();
     res.json(config);
   },
@@ -42,9 +44,14 @@ module.exports = {
     res.json(config);
   },
   async render(req, res) {
-    const data = req.params.confId ? await Config.findById(req.params.confId) : req.body;
-    if(!data || ['render', 'proxy'].indexOf(data.type) !== -1) throw new app.errors.ConfigNotFound();
+    const data = req.method === 'GET' ? await Config.findById(req.params.confId) : req.body;
+    if(!data || ['redirect', 'proxy'].indexOf(data.type) === -1) throw new app.errors.ConfigNotFound();
     res.locals = { ...res.locals, ...data };
-    res.render(`config.templates/${data.type}`);
+    res.render('config.template.hbs', { layout: false });
+  },
+  async test(req, res) {
+    const data = req.method === 'GET' ? await Config.findById(req.params.confId) : req.body;
+    if(!data || ['redirect', 'proxy'].indexOf(data.type) === -1) throw new app.errors.ConfigNotFound();
+    res.send(await testConfig(data));
   },
 };

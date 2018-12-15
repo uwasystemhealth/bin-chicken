@@ -1,62 +1,101 @@
-var path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin')
-var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-var VueLoader = require('vue-loader');
+require('dotenv').config();
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const VueLoader = require('vue-loader');
 
-function resolve (dir) {
-  return path.join(__dirname, dir)
+function resolve(dir) {
+  return path.join(__dirname, dir);
 }
-console.log(resolve('src/client'));
 
 module.exports = {
-  mode: 'development',
+  mode: process.env.NODE_ENV || 'development',
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new UglifyJsPlugin({
+        cache: true,
+        parallel: true,
+      }),
+      new OptimizeCSSAssetsPlugin({}),
+    ],
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+          maxSize: 30000,
+          minSize: 10000,
+        },
+      },
+    },
+  },
   entry: {
     app: './src/client/main.js',
   },
   output: {
-    path: resolve('/'),
-    filename: '[name].js',
-    publicPath: '/js/',
+    path: resolve('/dist/'),
+    filename: 'js/[name].[hash].js',
+    publicPath: '/',
   },
   resolve: {
-    extensions: ['.js', '.vue', '.json'],
+    extensions: ['.js', '.vue', '.json', '.css'],
     alias: {
-      'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src/client'),
-    }
+      vue$: 'vue/dist/vue.esm.js',
+      '@': resolve('src/client/'),
+    },
   },
   // cheap-module-eval-source-map is faster for development
   devtool: '#cheap-module-eval-source-map',
   plugins: [
-    // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
-      filename: './src/common/index.html',
       template: './src/common/index.html',
-      inject: true
     }),
-    new FriendlyErrorsPlugin(),
     new VueLoader.VueLoaderPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
+    new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
+
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+        new CleanWebpackPlugin(['*'], { root: resolve('/dist/'), beforeEmit: true }),
+      ]
+      : [
+        // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
+        new webpack.HotModuleReplacementPlugin(),
+        new FriendlyErrorsPlugin(),
+      ]
+    ),
   ],
   module: {
     rules: [
-      /*{
+      {
         test: /\.(js|vue)$/,
         loader: 'eslint-loader',
         enforce: 'pre',
-      },*/
+      },
       {
         test: /\.vue$/,
         loader: 'vue-loader',
-        options: {}
+        options: {},
       },
       {
         test: /\.css$/,
-        loader: 'css-loader',
-        options: {}
+        loader: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+        ],
       },
       {
         test: /\.js$/,
@@ -67,22 +106,22 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-        }
+        },
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
-        }
+        },
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
-        }
-      }
-    ]
+        },
+      },
+    ],
   },
 };

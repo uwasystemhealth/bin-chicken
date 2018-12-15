@@ -3,9 +3,9 @@ import Router from 'vue-router';
 
 import users from './users';
 
-import login from './components/login.vue';
-import usersComp from './components/users.vue';
-import configs from './components/configs.vue';
+import login from './components/login';
+import usersComp from './components/users';
+import configs from './components/configs';
 
 Vue.use(Router);
 
