@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable func-names */
 const mongoose = require('mongoose');
+const namor = require('namor');
 
 const { Schema } = mongoose;
 // const app = require('../../../app');
@@ -60,6 +61,7 @@ const ConfigSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   }],
+  key: String,
   enabled: enabledType,
 }, { timestamps: true });
 
@@ -80,6 +82,16 @@ ConfigSchema.methods.getPerm = function (user) {
   if(`${this.owner}` === `${user._id}`) return 'admin';
   if(this.collabs && this.collabs.find(v => `${v}` === `${user._id}`)) return 'collab';
   return 'none';
+};
+
+ConfigSchema.statics.genKey = async function () {
+  let key = '';
+  const genKey = async () => {
+    key = namor.generate({ words: 2, numbers: 0 });
+    if(await this.countDocuments({ key })) await genKey();
+  };
+  await genKey();
+  return key;
 };
 
 ConfigSchema.query.whereValid = function () {

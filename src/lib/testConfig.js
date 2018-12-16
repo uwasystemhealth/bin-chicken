@@ -9,7 +9,7 @@ const unlink = util.promisify(fs.unlink);
 
 module.exports = async (config) => {
   const render = `events {}\nhttp {\n${await renderConfig(config)}\n}`;
-  const filename = path.join(__dirname, `../../configs/${config.domain}.conf.testing`);
+  const filename = path.join(__dirname, `../../configs/${Date.now()}.conf.testing`);
   await writeFile(filename, render);
   let output = '';
   try {

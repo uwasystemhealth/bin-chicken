@@ -2,6 +2,7 @@ const app = require('../../../app');
 const testConfig = require('../../lib/testConfig');
 
 const Config = app.models.config;
+const keys = ['type', 'idiotProof', 'aliases', 'leDomain', 'leUpgrade', 'host', 'port', 'redirect', 'permanent', 'preserve', 'owner', 'collabs'];
 
 module.exports = {
   async find(req, res) {
@@ -16,11 +17,15 @@ module.exports = {
   },
   async create(req, res) {
     const { body } = req;
-    const config = new Config(body);
-    // eslint-disable-next-line no-underscore-dangle
+    const filtered = {};
+    [...keys, 'domain'].forEach((i) => { filtered[i] = body[i]; });
+    const config = new Config(filtered);
+
+    config.key = await Config.genKey();
     config.owner = res.locals.user._id;
     if(!Array.isArray(config.collabs)) config.collabs = [config.owner];
     if(config.collabs.indexOf(config.owner) === -1) config.collabs.push(config.owner);
+
     await config.save();
     res.json(config);
   },
@@ -28,11 +33,14 @@ module.exports = {
     const { body } = req;
     const config = req.params.confId ? await Config.findById(req.params.confId) : null;
     if(!config) throw new app.errors.ConfigNotFound();
+
     const perm = config.getPerm(res.locals.user);
     if(perm === 'none') throw new app.errors.NoPerm();
     if(perm === 'collab' && (body.collabs || body.owner)) throw new app.errors.NoPerm();
-    const keys = ['type', 'idiotProof', 'aliases', 'leDomain', 'leUpgrade', 'host', 'port', 'redirect', 'permanent', 'preserve', 'owner', 'collabs'];
+
     keys.forEach((i) => { config[i] = body[i] || config[i]; });
+    if(!config.key) config.key = await Config.genKey();
+
     await config.save();
     res.json(config);
   },
