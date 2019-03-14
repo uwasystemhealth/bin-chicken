@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "pack": "NODE_ENV=production webpack"
+    "pack": "NODE_ENV=production webpack",
+    "start": "node app"
   },
   "nodemonConfig": {
     "ignore": [

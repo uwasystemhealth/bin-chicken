@@ -1,0 +1,18 @@
+version: "2"
+services:
+  app:
+    build: .
+    environment:
+      NODE_ENV: production
+      MONGO_URI: mongodb://db/bin-chicken
+      HOST: "0.0.0.0"
+      COOKIE_SECRET: 123abc
+      PHEME_API_TOKEN: 123abc
+    depends_on:
+      - db
+    links:
+      - db
+    ports:
+      - 9002:9002
+  db:
+    image: mongo
