@@ -8,7 +8,7 @@ const writeFile = util.promisify(fs.writeFile);
 
 module.exports = async (config, restart = true) => {
   const render = await renderConfig(config);
-  const filename = path.join(__dirname, `../../configs/${config.domain}.conf`);
+  const filename = path.join(__dirname, `../../configs/${config.key || config._id}.conf`);
   await writeFile(filename, render);
   if(!restart) return;
   let output = '';

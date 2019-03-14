@@ -12,8 +12,16 @@
       </div>
     </div>
     <vk-table :data="configsData" hoverable responsive>
-      <vk-table-column title="Domain Name" cell="domain" expanded />
-      <vk-table-column title="Type" cell="type" />
+      <vk-table-column title="Domain Name" cell="config" expanded>
+        <div slot-scope="{ cell }" v-vk-tooltip="cell.key || cell._id">
+          {{cell.domain}}
+        </div>
+      </vk-table-column>
+      <vk-table-column title="Type" cell="type">
+        <div slot-scope="{ cell }" class="uk-text-capitalize">
+          {{cell}}
+        </div>
+      </vk-table-column>
       <vk-table-column title="Target" cell="target" />
       <vk-table-column title="HTTPS?" cell="leDomain">
         <div slot-scope="{ cell }">

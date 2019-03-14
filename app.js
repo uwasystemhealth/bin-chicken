@@ -9,4 +9,6 @@ app.errors = require('./src/errors/');
 require('./src/database/');
 require('./src');
 
-// require('./src/lib/initConfigFiles')();
+
+// eslint-disable-next-line global-require
+if (process.env.NODE_ENV === 'production') require('./src/lib/initConfigFiles')();

@@ -6,7 +6,7 @@ const exec = util.promisify(childProcess.exec);
 const unlink = util.promisify(fs.unlink);
 
 module.exports = async (config) => {
-  const filename = path.join(__dirname, `../../configs/${config.domain}.conf`);
+  const filename = path.join(__dirname, `../../configs/${config.key || config._id}.conf`);
   await unlink(filename);
   let output = '';
   try {
